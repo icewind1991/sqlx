@@ -1,6 +1,6 @@
 use proc_macro2::TokenStream;
 use syn::spanned::Spanned;
-use syn::Expr;
+use syn::{Expr, ExprGroup};
 
 use quote::{quote, quote_spanned, ToTokens};
 use sqlx::describe::Describe;
@@ -102,6 +102,7 @@ fn get_type_override(expr: &Expr) -> Option<TokenStream> {
     match expr {
         Expr::Cast(cast) => Some(cast.ty.to_token_stream()),
         Expr::Type(ascription) => Some(ascription.ty.to_token_stream()),
+        Expr::Group(ExprGroup { expr, .. }) => get_type_override(expr.as_ref()),
         _ => None,
     }
 }
